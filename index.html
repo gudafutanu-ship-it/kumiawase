@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <title>グループ組み合わせ計算ツール</title>
+  <meta name="description" content="グループの組み合わせ数を計算するツール">
+
+  <!-- PWA / GitHub Pages -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007aff">
+
+  <!-- iPhone / iPad -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="組み合わせ">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <style>
+    body { font-family: -apple-system, sans-serif; max-width: 600px; margin: 20px auto; padding: 15px; background: #f9f9f9; }
+    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .form-group { margin-bottom: 12px; }
+    label { display: inline-block; width: 140px; font-weight: bold; font-size: 14px; }
+    input[type="number"] { width: 80px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+    .section-title { font-size: 15px; font-weight: bold; margin-top: 15px; margin-bottom: 10px; color: #007aff; border-bottom: 2px solid #007aff; padding-bottom: 4px; }
+    .result { margin-top: 20px; padding: 15px; background: #f2f2f7; border-radius: 8px; font-size: 14px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2 style="font-size: 18px; margin-top:0;">組み合わせ数 計算ツール</h2>
+
+  <div class="form-group">
+    <label for="groupSize">作るグループ人数:</label>
+    <input type="number" id="groupSize" value="3" min="1" oninput="calculate()">
+  </div>
+
+  <div class="section-title">各組の人数</div>
+  <div class="form-group">
+    <label for="classA">A組の人数:</label>
+    <input type="number" id="classA" value="10" min="0" oninput="calculate()">
+  </div>
+  <div class="form-group">
+    <label for="classB">B組の人数:</label>
+    <input type="number" id="classB" value="8" min="0" oninput="calculate()">
+  </div>
+  <div class="form-group">
+    <label for="classC">C組の人数:</label>
+    <input type="number" id="classC" value="5" min="0" oninput="calculate()">
+  </div>
+
+  <div class="result" id="resultOutput">計算中...</div>
+</div>
+
+<script>
+function combinations(n, r) {
+  if (r < 0 || r > n) return 0n;
+  if (r === 0 || r === n) return 1n;
+  if (r > n / 2) r = n - r;
+  let res = 1n;
+  for (let i = 1n; i <= BigInt(r); i++) {
+    res = res * (BigInt(n) - i + 1n) / i;
+  }
+  return res;
+}
+
+function calculate() {
+  const K = parseInt(document.getElementById('groupSize').value) || 0;
+  const A = parseInt(document.getElementById('classA').value) || 0;
+  const B = parseInt(document.getElementById('classB').value) || 0;
+  const C = parseInt(document.getElementById('classC').value) || 0;
+
+  if (K <= 0) {
+    document.getElementById('resultOutput').innerHTML = "作るグループの人数を1以上にしてください。";
+    return;
+  }
+
+  let total3Groups = 0n;
+  for (let a = 1; a <= A; a++) {
+    for (let b = 1; b <= B; b++) {
+      let c = K - a - b;
+      if (c >= 1 && c <= C) {
+        total3Groups += combinations(A, a) * combinations(B, b) * combinations(C, c);
+      }
+    }
+  }
+
+  let abOnly = 0n;
+  for (let a = 1; a <= A; a++) {
+    let b = K - a;
+    if (b >= 1 && b <= B) abOnly += combinations(A, a) * combinations(B, b);
+  }
+
+  let bcOnly = 0n;
+  for (let b = 1; b <= B; b++) {
+    let c = K - b;
+    if (c >= 1 && c <= C) bcOnly += combinations(B, b) * combinations(C, c);
+  }
+
+  let acOnly = 0n;
+  for (let a = 1; a <= A; a++) {
+    let c = K - a;
+    if (c >= 1 && c <= C) acOnly += combinations(A, a) * combinations(C, c);
+  }
+
+  let total2Groups = abOnly + bcOnly + acOnly;
+
+  document.getElementById('resultOutput').innerHTML = `
+    <strong>【3組すべてから1人以上選ぶ場合】</strong><br>
+    ・${total3Groups.toLocaleString()} 通り<br><br>
+    <strong>【2組しか使わない場合】</strong><br>
+    ・A組・B組のみ： ${abOnly.toLocaleString()} 通り<br>
+    ・B組・C組のみ： ${bcOnly.toLocaleString()} 通り<br>
+    ・A組・C組のみ： ${acOnly.toLocaleString()} 通り<br>
+    <strong>→ 合計： ${total2Groups.toLocaleString()} 通り</strong>
+  `;
+}
+calculate();
+</script>
+
+</body>
+</html>
