@@ -3,62 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>グループ組み合わせ計算ツール</title>
-  <meta name="description" content="グループの組み合わせ数を計算するツール">
-
-  <!-- PWA / GitHub Pages -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#007aff">
-
-  <!-- iPhone / iPad -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="組み合わせ">
-  <link rel="apple-touch-icon" href="icon-192.png">
-
-  <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <style>
-    body { font-family: -apple-system, sans-serif; max-width: 600px; margin: 20px auto; padding: 15px; background: #f9f9f9; }
-    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .form-group { margin-bottom: 12px; }
-    label { display: inline-block; width: 140px; font-weight: bold; font-size: 14px; }
-    input[type="number"] { width: 80px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
-    .section-title { font-size: 15px; font-weight: bold; margin-top: 15px; margin-bottom: 10px; color: #007aff; border-bottom: 2px solid #007aff; padding-bottom: 4px; }
-    .result { margin-top: 20px; padding: 15px; background: #f2f2f7; border-radius: 8px; font-size: 14px; line-height: 1.6; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 15px;
+      background: #f4f5f7;
+      color: #333;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 0;
+      color: #111;
+      border-bottom: 2px solid #007aff;
+      padding-bottom: 8px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .group-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    .group-label {
+      font-weight: bold;
+      font-size: 15px;
+      width: 50px;
+    }
+    .input-num {
+      width: 70px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      text-align: center;
+    }
+    .checkbox-label {
+      font-size: 13px;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .checkbox-label input {
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 15px 0 10px;
+      color: #555;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #eef5ff;
+      border: 1px solid #cce5ff;
+      border-radius: 8px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .result-main {
+      font-size: 22px;
+      font-weight: bold;
+      color: #007aff;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <h2 style="font-size: 18px; margin-top:0;">組み合わせ数 計算ツール</h2>
+  <h2>組み合わせ数 計算ツール</h2>
 
-  <div class="form-group">
-    <label for="groupSize">作るグループ人数:</label>
-    <input type="number" id="groupSize" value="3" min="1" oninput="calculate()">
-  </div>
-
-  <div class="section-title">各組の人数</div>
-  <div class="form-group">
-    <label for="classA">A組の人数:</label>
-    <input type="number" id="classA" value="10" min="0" oninput="calculate()">
-  </div>
-  <div class="form-group">
-    <label for="classB">B組の人数:</label>
-    <input type="number" id="classB" value="8" min="0" oninput="calculate()">
-  </div>
-  <div class="form-group">
-    <label for="classC">C組の人数:</label>
-    <input type="number" id="classC" value="5" min="0" oninput="calculate()">
+  <div class="form-group" style="margin-bottom: 20px;">
+    <label style="font-weight: bold; font-size: 15px;">作るグループの総人数: </label>
+    <input type="number" id="groupSize" class="input-num" value="10" min="1" oninput="calculate()">
   </div>
 
+  <div class="section-title">各組の設定（人数 / 1人以上選ぶか）</div>
+
+  <!-- A組 -->
+  <div class="group-row">
+    <span class="group-label">A組:</span>
+    <div>
+      <input type="number" id="classA" class="input-num" value="10" min="0" oninput="calculate()"> 人
+    </div>
+    <label class="checkbox-label">
+      <input type="checkbox" id="minA" checked onchange="calculate()">
+      最低1人選ぶ
+    </label>
+  </div>
+
+  <!-- B組 -->
+  <div class="group-row">
+    <span class="group-label">B組:</span>
+    <div>
+      <input type="number" id="classB" class="input-num" value="8" min="0" oninput="calculate()"> 人
+    </div>
+    <label class="checkbox-label">
+      <input type="checkbox" id="minB" checked onchange="calculate()">
+      最低1人選ぶ
+    </label>
+  </div>
+
+  <!-- C組 -->
+  <div class="group-row">
+    <span class="group-label">C組:</span>
+    <div>
+      <input type="number" id="classC" class="input-num" value="5" min="0" oninput="calculate()"> 人
+    </div>
+    <label class="checkbox-label">
+      <input type="checkbox" id="minC" checked onchange="calculate()">
+      最低1人選ぶ
+    </label>
+  </div>
+
+  <!-- 結果表示 -->
   <div class="result" id="resultOutput">計算中...</div>
 </div>
 
 <script>
+// 組み合わせ (nCr) 計算関数（BigIntで精度100%）
 function combinations(n, r) {
   if (r < 0 || r > n) return 0n;
   if (r === 0 || r === n) return 1n;
@@ -76,51 +158,50 @@ function calculate() {
   const B = parseInt(document.getElementById('classB').value) || 0;
   const C = parseInt(document.getElementById('classC').value) || 0;
 
+  const minA = document.getElementById('minA').checked ? 1 : 0;
+  const minB = document.getElementById('minB').checked ? 1 : 0;
+  const minC = document.getElementById('minC').checked ? 1 : 0;
+
   if (K <= 0) {
     document.getElementById('resultOutput').innerHTML = "作るグループの人数を1以上にしてください。";
     return;
   }
 
-  let total3Groups = 0n;
-  for (let a = 1; a <= A; a++) {
-    for (let b = 1; b <= B; b++) {
+  let totalCombinations = 0n;
+
+  // 各組から選ぶ人数 (a, b, c) を全探索
+  for (let a = 0; a <= A; a++) {
+    if (minA === 1 && a === 0) continue; // A組から最低1人選ぶ設定で0人の場合は除外
+
+    for (let b = 0; b <= B; b++) {
+      if (minB === 1 && b === 0) continue; // B組から最低1人選ぶ設定で0人の場合は除外
+
       let c = K - a - b;
-      if (c >= 1 && c <= C) {
-        total3Groups += combinations(A, a) * combinations(B, b) * combinations(C, c);
-      }
+
+      if (c < 0 || c > C) continue; // C組の人数範囲外なら除外
+      if (minC === 1 && c === 0) continue; // C組から最低1人選ぶ設定で0人の場合は除外
+
+      totalCombinations += combinations(A, a) * combinations(B, b) * combinations(C, c);
     }
   }
 
-  let abOnly = 0n;
-  for (let a = 1; a <= A; a++) {
-    let b = K - a;
-    if (b >= 1 && b <= B) abOnly += combinations(A, a) * combinations(B, b);
-  }
+  // 設定状況の文言を作成
+  let conditions = [];
+  if (minA) conditions.push("A組");
+  if (minB) conditions.push("B組");
+  if (minC) conditions.push("C組");
 
-  let bcOnly = 0n;
-  for (let b = 1; b <= B; b++) {
-    let c = K - b;
-    if (c >= 1 && c <= C) bcOnly += combinations(B, b) * combinations(C, c);
-  }
-
-  let acOnly = 0n;
-  for (let a = 1; a <= A; a++) {
-    let c = K - a;
-    if (c >= 1 && c <= C) acOnly += combinations(A, a) * combinations(C, c);
-  }
-
-  let total2Groups = abOnly + bcOnly + acOnly;
+  let condText = conditions.length > 0 
+    ? `【${conditions.join("・")}】から必ず1人以上選ぶ` 
+    : "全員任意（0人の組があってもOK）";
 
   document.getElementById('resultOutput').innerHTML = `
-    <strong>【3組すべてから1人以上選ぶ場合】</strong><br>
-    ・${total3Groups.toLocaleString()} 通り<br><br>
-    <strong>【2組しか使わない場合】</strong><br>
-    ・A組・B組のみ： ${abOnly.toLocaleString()} 通り<br>
-    ・B組・C組のみ： ${bcOnly.toLocaleString()} 通り<br>
-    ・A組・C組のみ： ${acOnly.toLocaleString()} 通り<br>
-    <strong>→ 合計： ${total2Groups.toLocaleString()} 通り</strong>
+    <div style="font-size:13px; color:#555;">条件: ${condText}</div>
+    <div class="result-main">${totalCombinations.toLocaleString()} 通り</div>
   `;
 }
+
+// 初回計算実行
 calculate();
 </script>
 
